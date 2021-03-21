@@ -4,6 +4,8 @@ metadata:
   name: trainingjava
   labels:
     app: tomcat
+  annotations:
+    kubernetes.io/change-cause: Build no is 
 spec:
   replicas: 1
   selector:
@@ -31,5 +33,5 @@ spec:
   ports:
   - protocol: TCP
     port: 8080
-    nodePort: 32000
+    nodePort: 31000
   type: LoadBalancer
