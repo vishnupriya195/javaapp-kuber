@@ -8,7 +8,7 @@
 </head>
 <body>
 <center>
-<h1>This is a ZippyOPS First Demo Application<h1>
+<h1>This is a Jenkins Training Demo Application<h1>
 <img alt="" src="zippy.png">
 <h4>
 
