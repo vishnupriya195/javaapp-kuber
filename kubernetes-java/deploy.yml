@@ -5,7 +5,7 @@ metadata:
   labels:
     app: tomcat
   annotations:
-    kubernetes.io/change-cause: Build no is 
+    kubernetes.io/change-cause: Build no is test
 spec:
   replicas: 1
   selector:
