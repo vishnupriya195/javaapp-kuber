@@ -1,13 +1,13 @@
 pipeline {
     environment {
-        imagename = "sathishbob/jenkins-javaapp-training:test"
+        imagename = "sathishbob/javaapp-jenkins-training"
         dockerImage = ''
         registryCredentials = 'dockerhub'
     }
     agent any
     tools {
-        maven 'MVN3'
-        dockerTool 'docker'
+        maven "MVN3"
+        dockerTool "docker"
     }
     
     stages {
@@ -24,35 +24,39 @@ pipeline {
         stage("Build Docker Image") {
             steps {
                 script {
-                    dockerImage = docker.build("$imagename", "kubernetes-java")
+                    dockerImage = docker.build("$imagename","kubernetes-java")
                 }
             }
         }
-        stage("Push Docker Image") {
+        stage("push Docker image") {
             steps {
                 script {
                     docker.withRegistry( '', registryCredentials ) {
-                        dockerImage.push()
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
                     }
                 }
             }
         }
-        stage("Cleanup") {
+        stage(Removeunusedimages) {
             steps {
+                sh "docker rmi $imagename:$BUILD_NUMBER"
                 sh "docker rmi $imagename"
             }
         }
-        stage("pullrepoonlinuxnode") {
+        stage("pullrepoonnode") {
             agent { label 'linux' }
             steps {
                 git credentialsId: 'github', url: 'git@github.com:sathishbob/javaapp-kuber.git'
             }
         }
-        stage("kubeDeployment") {
+        stage("kubedeployment") {
             agent { label 'linux' }
             steps {
+                sh "sed -i s/latest/$BUILD_NUMBER/g kubernetes-java/deploy.yml"
                 sh "kubectl apply -f kubernetes-java/deploy.yml"
             }
         }
     }
+
 }
