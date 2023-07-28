@@ -19,6 +19,7 @@ pipeline {
         stage("build") {
             steps {
                 sh "mvn -f kubernetes-java clean install"
+                sh "systemctl status docker"
             }
         }
         stage("Build Docker Image") {
