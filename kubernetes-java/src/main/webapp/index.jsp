@@ -8,7 +8,7 @@
 </head>
 <body>
 <center>
-<h1>This is a Jenkins Training Application for OptumServe batch2<h1>
+<h1>This is a devops Training Application for Optum<h1>
 <img alt="" src="zippy.png">
 <h4>
 
