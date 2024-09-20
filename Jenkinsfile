@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage("pullscm") {
             steps {
-                git credentialsId: 'github', url: 'git@github.com:sathishbob/javaapp-kuber.git'
+                git credentialsId: 'git', url: 'git@github.com:sathishbob/javaapp-kuber.git'
             }
         }
         stage("build") {
@@ -44,14 +44,7 @@ pipeline {
                 sh "docker rmi $imagename"
             }
         }
-        stage("pullrepoonnode") {
-            agent { label 'linux' }
-            steps {
-                git credentialsId: 'github', url: 'git@github.com:sathishbob/javaapp-kuber.git'
-            }
-        }
         stage("kubedeployment") {
-            agent { label 'linux' }
             steps {
                 sh "sed -i s/latest/$BUILD_NUMBER/g kubernetes-java/deploy.yml"
                 sh "kubectl apply -f kubernetes-java/deploy.yml"
