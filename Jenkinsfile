@@ -25,7 +25,7 @@ pipeline {
         stage('build docker image') {
             steps {
                 script {
-                    dockerImage = docker.build("sathishbob/javaapp-k8s","kubernetes-java")
+                    dockerImage = docker.build("sathishbob/javaapp-kubernetes","kubernetes-java")
                 }
             }
         }
