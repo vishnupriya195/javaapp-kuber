@@ -1,55 +1,55 @@
 pipeline {
-    
+    environment {
+        imagename = "sathishbob/javaapp-jenkins-training"
+        dockerImage = ''
+        registryCredentials = 'dockerhub'
+    }
     agent any
-    
-    
-    
     tools {
         maven "MVN3"
         dockerTool "docker"
     }
     
     stages {
-        stage('pullscm') {
+        stage("pullscm") {
             steps {
                 git credentialsId: 'github', url: 'git@github.com:sathishbob/javaapp-kuber.git'
             }
         }
-        
-        stage('build') {
+        stage("build") {
             steps {
                 sh "mvn -f kubernetes-java clean install"
             }
         }
-        
-        stage('build docker image') {
+        stage("Build Docker Image") {
             steps {
                 script {
-                    dockerImage = docker.build("sathishbob/javaapp-kubernetes","kubernetes-java")
+                    dockerImage = docker.build("$imagename","kubernetes-java")
                 }
             }
         }
-        
-        stage('Push docker image') {
+        stage("push Docker image") {
             steps {
                 script {
-                    docker.withRegistry( '', 'dockerhub') {
-                        dockerImage.push ("$BUILD_NUMBER")
+                    docker.withRegistry( '', registryCredentials ) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
                     }
                 }
             }
         }
-        
-        stage ('Kube Deployment') {
+        stage(Removeunusedimages) {
             steps {
-                script {
-                    withKubeConfig([credentialsId: 'kube']) {
-                        sh "sed -i s/latest/$BUILD_NUMBER/g kubernetes-java/deploy.yml"
-                        sh "kubectl apply -f kubernetes-java/deploy.yml"
-                        sh "sleep 10 && kubectl get svc"
-                    }
-                }
+                sh "docker rmi $imagename:$BUILD_NUMBER"
+                sh "docker rmi $imagename"
+            }
+        }
+        stage("kubedeployment") {
+            steps {
+                sh "sed -i s/latest/$BUILD_NUMBER/g kubernetes-java/deploy.yml"
+                sh "sudo kubectl apply -f kubernetes-java/deploy.yml"
             }
         }
     }
+
 }
